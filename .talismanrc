@@ -1,0 +1,4 @@
+fileignoreconfig:
+- filename: k3d.sh
+  checksum: 3a07bdd910eb5906d0b80295b41a44740ab74dd22af20169d2c8e82e2b28df49
+version: ""
