@@ -1,4 +1,4 @@
 fileignoreconfig:
-- filename: README.md
-  checksum: 3a4e3eabd3bee1f8377994c4277a45a4e134c57f0937d1fac74e5ff96d31c1b4
+- filename: k3d.sh
+  checksum: efe884d3695cf7d588d5fd9d14099d44095046975694c6e57730365d308d6811
 version: ""
