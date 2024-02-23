@@ -1,4 +1,6 @@
 fileignoreconfig:
-- filename: k3d.sh
-  checksum: efe884d3695cf7d588d5fd9d14099d44095046975694c6e57730365d308d6811
+- filename: README.md
+  checksum: d126e3ac212acc32b86dc0161b1aeffb03e65e1f165ca0b2be47393f3b6b49f0
+- filename: kind.sh
+  checksum: 2be88bde49f3e18e7c104970c780bb74dd45ea6c6d7350f90bfb8ea0521a78a5
 version: ""
