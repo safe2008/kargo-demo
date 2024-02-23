@@ -57,6 +57,7 @@ spec:
         - CreateNamespace=true
 EOF
 
+kargo create project kargo-demo
 
 cat <<EOF | kubectl apply -f -
 apiVersion: v1
@@ -73,6 +74,88 @@ stringData:
   username: ${GITHUB_USERNAME}
   password: ${GITHUB_PAT}
 EOF
+
+
+cat <<EOF | kargo apply -f -
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Warehouse
+metadata:
+  name: kargo-demo
+  namespace: kargo-demo
+spec:
+  subscriptions:
+  - image:
+      repoURL: nginx
+      semverConstraint: ^1.24.0
+---
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Stage
+metadata:
+  name: test
+  namespace: kargo-demo
+spec:
+  subscriptions:
+    warehouse: kargo-demo
+  promotionMechanisms:
+    gitRepoUpdates:
+    - repoURL: ${GITOPS_REPO_URL}
+      writeBranch: stage/test
+      kustomize:
+        images:
+        - image: nginx
+          path: stages/test
+    argoCDAppUpdates:
+    - appName: kargo-demo-test
+      appNamespace: argocd
+---
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Stage
+metadata:
+  name: uat
+  namespace: kargo-demo
+spec:
+  subscriptions:
+    upstreamStages:
+    - name: test
+  promotionMechanisms:
+    gitRepoUpdates:
+    - repoURL: ${GITOPS_REPO_URL}
+      writeBranch: stage/uat
+      kustomize:
+        images:
+        - image: nginx
+          path: stages/uat
+    argoCDAppUpdates:
+    - appName: kargo-demo-uat
+      appNamespace: argocd
+---
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Stage
+metadata:
+  name: prod
+  namespace: kargo-demo
+spec:
+  subscriptions:
+    upstreamStages:
+    - name: uat
+  promotionMechanisms:
+    gitRepoUpdates:
+    - repoURL: ${GITOPS_REPO_URL}
+      writeBranch: stage/prod
+      kustomize:
+        images:
+        - image: nginx
+          path: stages/prod
+    argoCDAppUpdates:
+    - appName: kargo-demo-prod
+      appNamespace: argocd
+EOF
+
+kargo get warehouses --project kargo-demo
+
+kargo get stages --project kargo-demo
+
+kargo get freight --project kargo-demo
 
 
 ```
