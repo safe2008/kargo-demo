@@ -3,8 +3,8 @@
 ```shell
 curl -L https://raw.githubusercontent.com/akuity/kargo/main/hack/quickstart/k3d.sh | sh
 
-localhost:31443
-localhost:31444
+https://localhost:31443
+https://localhost:31444
 
 arch=$(uname -m)
 echo $arch
@@ -16,9 +16,9 @@ sudo mv kargo /usr/local/bin
 
 kargo version
 
-export GITOPS_REPO_URL=https://github.com/safe2008/kargo-demo.git
+export GITOPS_REPO_URL=https://github.com/safe2008/kargo-demo
 export GITHUB_USERNAME=safe2008
-export GITHUB_PAT=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
+export GITHUB_PAT=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
 
 kargo login https://localhost:31444 \
   --admin \
@@ -156,6 +156,24 @@ kargo get warehouses --project kargo-demo
 kargo get stages --project kargo-demo
 
 kargo get freight --project kargo-demo
+
+export FREIGHT_ID=$(kargo get freight --project kargo-demo --output jsonpath={.id})
+kargo stage promote --project kargo-demo test --freight $FREIGHT_ID
+kargo get promotions --project kargo-demo
+kargo get stages --project kargo-demo
+kargo get stage test --project kargo-demo --output jsonpath-as-json={.status}
+kargo get freight $FREIGHT_ID --project kargo-demo --output jsonpath-as-json={.status}
+
+kargo stage promote --project kargo-demo uat --freight $FREIGHT_ID
+kargo get promotions --project kargo-demo
+
+kargo stage promote --project kargo-demo prod --freight $FREIGHT_ID
+kargo get promotions --project kargo-demo
+
+uat: localhost:30082
+prod: localhost:30083
+
+kind delete cluster --name kargo-quickstart
 
 
 ```
