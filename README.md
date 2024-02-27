@@ -1,7 +1,10 @@
 ## https://kargo.akuity.io/quickstart
 
 ```shell
-curl -L https://raw.githubusercontent.com/akuity/kargo/main/hack/quickstart/k3d.sh | sh
+./kind.sh
+
+## Cleaning up
+kind delete cluster --name kargo-quickstart
 
 https://localhost:31443
 https://localhost:31444
