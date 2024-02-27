@@ -38,7 +38,8 @@ spec:
   generators:
   - list:
       elements:
-      - stage: test
+      - stage: dev
+      - stage: qa
       - stage: uat
       - stage: prod
   template:
@@ -94,7 +95,7 @@ spec:
 apiVersion: kargo.akuity.io/v1alpha1
 kind: Stage
 metadata:
-  name: test
+  name: dev
   namespace: kargo-demo
 spec:
   subscriptions:
@@ -102,13 +103,34 @@ spec:
   promotionMechanisms:
     gitRepoUpdates:
     - repoURL: ${GITOPS_REPO_URL}
-      writeBranch: stage/test
+      writeBranch: stage/dev
       kustomize:
         images:
         - image: nginx
-          path: stages/test
+          path: stages/dev
     argoCDAppUpdates:
-    - appName: kargo-demo-test
+    - appName: kargo-demo-dev
+      appNamespace: argocd
+---
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Stage
+metadata:
+  name: qa
+  namespace: kargo-demo
+spec:
+  subscriptions:
+    upstreamStages:
+    - name: dev
+  promotionMechanisms:
+    gitRepoUpdates:
+    - repoURL: ${GITOPS_REPO_URL}
+      writeBranch: stage/qa
+      kustomize:
+        images:
+        - image: nginx
+          path: stages/qa
+    argoCDAppUpdates:
+    - appName: kargo-demo-qa
       appNamespace: argocd
 ---
 apiVersion: kargo.akuity.io/v1alpha1
@@ -119,7 +141,7 @@ metadata:
 spec:
   subscriptions:
     upstreamStages:
-    - name: test
+    - name: qa
   promotionMechanisms:
     gitRepoUpdates:
     - repoURL: ${GITOPS_REPO_URL}
@@ -161,11 +183,14 @@ kargo get stages --project kargo-demo
 kargo get freight --project kargo-demo
 
 export FREIGHT_ID=$(kargo get freight --project kargo-demo --output jsonpath={.id})
-kargo stage promote --project kargo-demo test --freight $FREIGHT_ID
+kargo stage promote --project kargo-demo dev --freight $FREIGHT_ID
 kargo get promotions --project kargo-demo
 kargo get stages --project kargo-demo
-kargo get stage test --project kargo-demo --output jsonpath-as-json={.status}
+kargo get stage dev --project kargo-demo --output jsonpath-as-json={.status}
 kargo get freight $FREIGHT_ID --project kargo-demo --output jsonpath-as-json={.status}
+
+kargo stage promote --project kargo-demo qa --freight $FREIGHT_ID
+kargo get promotions --project kargo-demo
 
 kargo stage promote --project kargo-demo uat --freight $FREIGHT_ID
 kargo get promotions --project kargo-demo
