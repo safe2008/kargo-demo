@@ -14,7 +14,9 @@ nodes:
     hostPort: 31443
   - containerPort: 31444 # Kargo dashboard
     hostPort: 31444
-  - containerPort: 30081 # test application instance
+  - containerPort: 30080 # DEV application instance
+    hostPort: 30080
+  - containerPort: 30081 # QA application instance
     hostPort: 30081
   - containerPort: 30082 # UAT application instance
     hostPort: 30082
